@@ -97,3 +97,193 @@
         }
     </style>
 </head>
+<body>
+
+<div class="glass-panel">
+    
+    <!-- Steps 1 to 5 remain exactly the same as your wizard -->
+    <div class="step active" id="step0">
+        <h2>What is your monthly income?</h2>
+        <input type="number" id="income" placeholder="0.00">
+        <div class="btn-group">
+            <button class="btn-next" onclick="nextStep(0)">Next</button>
+        </div>
+    </div>
+
+    <div class="step" id="step1">
+        <h2>What are your fixed monthly expenses?</h2>
+        <input type="number" id="expenses" placeholder="0.00">
+        <div class="btn-group">
+            <button class="btn-back" onclick="prevStep(1)">Back</button>
+            <button class="btn-next" onclick="nextStep(1)">Next</button>
+        </div>
+    </div>
+
+    <div class="step" id="step2">
+        <h2>What are you saving for?</h2>
+        <input type="text" id="goalName" placeholder="e.g., A new house">
+        <div class="btn-group">
+            <button class="btn-back" onclick="prevStep(2)">Back</button>
+            <button class="btn-next" onclick="nextStep(2)">Next</button>
+        </div>
+    </div>
+
+    <div class="step" id="step3">
+        <h2>How much do you need for this?</h2>
+        <input type="number" id="goalAmount" placeholder="0.00">
+        <div class="btn-group">
+            <button class="btn-back" onclick="prevStep(3)">Back</button>
+            <button class="btn-next" onclick="nextStep(3)">Next</button>
+        </div>
+    </div>
+
+    <div class="step" id="step4">
+        <h2>In how many months?</h2>
+        <input type="number" id="months" placeholder="e.g., 24">
+        <div class="btn-group">
+            <button class="btn-back" onclick="prevStep(4)">Back</button>
+            <button class="btn-next" onclick="calculatePlan()">Generate Blueprint</button>
+        </div>
+    </div>
+
+    <!-- Step 6: Upgraded Results -->
+    <div class="step" id="step5">
+        <h2>Your Master Plan</h2>
+        <div id="resultsContent"></div>
+        <div class="btn-group">
+            <button class="btn-back" onclick="resetForm()">Plan Another Goal</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Array of unique, beautiful messages
+    const beautifulMessages = [
+        "Every sum saved is a seed planted for your future forest.",
+        "Patience and discipline are the true architects of financial freedom.",
+        "Your dreams are valid, and today you've mapped the path to reach them.",
+        "Small, consistent steps move mountains over time.",
+        "Wealth isn't just about money; it's about the freedom to live on your own terms.",
+        "Time is your greatest asset. Starting today is your greatest victory."
+    ];
+
+    function nextStep(current) {
+        const inputs = document.querySelectorAll('.step')[current].querySelectorAll('input');
+        if (inputs[0] && inputs[0].value === "") {
+            alert("Please enter a value before continuing.");
+            return;
+        }
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('step' + (current + 1)).classList.add('active');
+    }
+
+    function prevStep(current) {
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('step' + (current - 1)).classList.add('active');
+    }
+
+    function resetForm() {
+        document.getElementById('step5').classList.remove('active');
+        document.getElementById('step0').classList.add('active');
+        document.querySelectorAll('input').forEach(input => input.value = '');
+    }
+
+    function calculatePlan() {
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        const goalName = document.getElementById('goalName').value || "Your Goal";
+        const goalAmount = parseFloat(document.getElementById('goalAmount').value) || 0;
+        const months = parseInt(document.getElementById('months').value) || 1;
+
+        if (goalAmount <= 0 || months <= 0) {
+            alert("Please enter valid goal numbers.");
+            return;
+        }
+
+        nextStep(4); // Move to results
+
+        const capacity = income - expenses;
+        const requiredMonthly = goalAmount / months;
+        const score = (capacity / requiredMonthly) * 100;
+        const isAchievable = score >= 100;
+        
+        const finalMonths = isAchievable ? months : Math.ceil(goalAmount / capacity);
+        const finalMonthlySave = isAchievable ? requiredMonthly : capacity;
+
+        let htmlOutput = "";
+
+        // Pick a random beautiful message
+        const randomMsg = beautifulMessages[Math.floor(Math.random() * beautifulMessages.length)];
+        htmlOutput += `<div class="quote-box">"${randomMsg}"</div>`;
+
+        if (capacity <= 0) {
+            htmlOutput += `
+                <div class="result-box warning">
+                    <h3>Critical Analysis</h3>
+                    <p>Your expenses match or exceed your income. You have zero available capacity.</p>
+                    <p><strong>Next Step:</strong> Focus entirely on reducing fixed expenses or increasing income streams before tackling this goal.</p>
+                </div>`;
+            document.getElementById('resultsContent').innerHTML = htmlOutput;
+            return;
+        }
+
+        // Build the main result box
+        let boxClass = isAchievable ? "result-box" : "result-box warning";
+        htmlOutput += `<div class="${boxClass}">`;
+        
+        if (isAchievable) {
+            htmlOutput += `<h3>Target: 100% Achievable</h3>
+                           <p>You have the capacity to conquer this in <strong>${months} months</strong>.</p>`;
+        } else {
+            htmlOutput += `<h3>Target: ${score.toFixed(1)}% Achievable Initially</h3>
+                           <p>To reach this safely without debt, your timeline shifts to <strong>${finalMonths} months</strong>.</p>`;
+        }
+
+        // Monthly Task List
+        htmlOutput += `<h4>The Monthly Ritual</h4>
+                       <ul>
+                           <li><strong>Step 1:</strong> Clear ${expenses.toFixed(2)} in fixed living expenses.</li>
+                           <li><strong>Step 2:</strong> Immediately secure ${finalMonthlySave.toFixed(2)} toward ${goalName}.</li>`;
+        
+        if (isAchievable && (capacity - requiredMonthly) > 0) {
+            htmlOutput += `<li><strong>Step 3:</strong> You have ${(capacity - requiredMonthly).toFixed(2)} left over. Build an emergency buffer!</li>`;
+        }
+        htmlOutput += `</ul>`;
+
+        // Yearly Milestones Generation
+        const totalYears = Math.floor(finalMonths / 12);
+        const remainingMonths = finalMonths % 12;
+        
+        if (finalMonths > 12) {
+            htmlOutput += `<h4>Yearly Progress Tracker</h4><ul>`;
+            for (let i = 1; i <= totalYears; i++) {
+                let savedSoFar = finalMonthlySave * 12 * i;
+                htmlOutput += `<li><strong>End of Year ${i}:</strong> ${savedSoFar.toFixed(2)} saved</li>`;
+            }
+            if (remainingMonths > 0) {
+                htmlOutput += `<li><strong>Year ${totalYears} + ${remainingMonths} months:</strong> Goal Reached!</li>`;
+            }
+            htmlOutput += `</ul>`;
+        }
+
+        // Smart Investment Recommendations
+        htmlOutput += `<h4>Growth & Investment Strategy</h4><ul>`;
+        
+        if (finalMonths < 36) {
+            // Short term recommendation
+            htmlOutput += `<li><strong>Vehicle:</strong> Because your goal is short-term (under 3 years), protect your capital. Look into opening a <strong>Fixed Deposit (FD)</strong> or Recurring Deposit (RD).</li>`;
+        } else {
+            // Long term recommendation
+            htmlOutput += `<li><strong>Vehicle:</strong> Because your goal is long-term (3+ years), you need to beat inflation. Consider starting a Systematic Investment Plan (SIP) in <strong>Mutual Funds</strong> or Index Funds.</li>`;
+        }
+        
+        htmlOutput += `<li><strong>Action Required:</strong> Always search the internet for today's live interest rates and historical mutual fund returns before deciding where to park your money. Don't let your money sit in a 0% checking account!</li>`;
+        htmlOutput += `</ul></div>`;
+
+        document.getElementById('resultsContent').innerHTML = htmlOutput;
+    }
+</script>
+
+</body>
+</html>
