@@ -1,177 +1,28 @@
-
-        }
-
-        .btn-next {
-            background: #fff;
-            color: #5b0060;
-        }
-        .btn-next:hover {
-            background: #f0f0f0;
-            transform: translateY(-2px);
-        }
-
-        .btn-back {
-            background: rgba(255, 255, 255, 0.2);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Financial Planner</title>
+    <style>
+        /* Rich Animated Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f005c, #5b0060, #870160, #ac255e, #ca485c, #e16b5c, #f39060, #ffb56b);
+            background-size: 300% 300%;
+            animation: gradientMove 12s ease infinite;
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .btn-back:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-/* Results Styling */
-        #results {
-            text-align: left;
-        }
-        .result-box {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            border-left: 5px solid #4ade80;
-        }
-        .result-box.warning {
-            border-left-color: #fbbf24;
-        }
-        .result-box ul {
-            padding-left: 20px;
-            line-height: 1.8;
-        }
-    </style>
-</head>
-
-    <body>
-
-<div class="glass-panel">
-    
-    <!-- Step 1: Income -->
-    <div class="step active" id="step0">
-        <h2>What is your monthly income?</h2>
-        <input type="number" id="income" placeholder="$0.00">
-        <div class="btn-group">
-            <button class="btn-next" onclick="nextStep(0)">Next</button>
-        </div>
-    </div>
-
-    <!-- Step 2: Expenses -->
-    <div class="step" id="step1">
-        <h2>What are your fixed monthly expenses?</h2>
-        <input type="number" id="expenses" placeholder="$0.00">
-        <div class="btn-group">
-            <button class="btn-back" onclick="prevStep(1)">Back</button>
-            <button class="btn-next" onclick="nextStep(1)">Next</button>
-        </div>
-    </div>
-
-    <!-- Step 3: Goal Name -->
-    <div class="step" id="step2">
-        <h2>What are you saving for?</h2>
-        <input type="text" id="goalName" placeholder="e.g., A new car">
-        <div class="btn-group">
-            <button class="btn-back" onclick="prevStep(2)">Back</button>
-            <button class="btn-next" onclick="nextStep(2)">Next</button>
-        </div>
-    </div>
-
-    <!-- Step 4: Goal Amount -->
-    <div class="step" id="step3">
-        <h2>How much do you need for this?</h2>
-        <input type="number" id="goalAmount" placeholder="$0.00">
-        <div class="btn-group">
-            <button class="btn-back" onclick="prevStep(3)">Back</button>
-            <button class="btn-next" onclick="nextStep(3)">Next</button>
-        </div>
-    </div>
-
-    <!-- Step 5: Timeline -->
-    <div class="step" id="step4">
-        <h2>In how many months?</h2>
-        <input type="number" id="months" placeholder="e.g., 12">
-        <div class="btn-group">
-            <button class="btn-back" onclick="prevStep(4)">Back</button>
-            <button class="btn-next" onclick="calculatePlan()">Calculate Plan</button>
-        </div>
-    </div>
-
-    <!-- Step 6: Results -->
-    <div class="step" id="step5">
-        <h2>Your Action Plan</h2>
-        <div id="resultsContent"></div>
-        <div class="btn-group">
-            <button class="btn-back" onclick="resetForm()">Start Over</button>
-        </div>
-    </div>
-
-</div>
-
-
-        <script>
-    // Navigation Logic
-    function nextStep(current) {
-        // Basic validation so they don't skip empty fields
-        const inputs = document.querySelectorAll('.step')[current].querySelectorAll('input');
-        if (inputs[0] && inputs[0].value === "") {
-            alert("Please enter a value before continuing.");
-            return;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        document.getElementById('step' + current).classList.remove('active');
-        document.getElementById('step' + (current + 1)).classList.add('active');
-    }
-
-    function prevStep(current) {
-        document.getElementById('step' + current).classList.remove('active');
-        document.getElementById('step' + (current - 1)).classList.add('active');
-    }
-
-    function resetForm() {
-        document.getElementById('step5').classList.remove('active');
-        document.getElementById('step0').classList.add('active');
-        
-        // Clear all inputs
-        document.querySelectorAll('input').forEach(input => input.value = '');
-    }
-
-    // Financial Math Logic
-    function calculatePlan() {
-        const income = parseFloat(document.getElementById('income').value) || 0;
-        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
-        const goalName = document.getElementById('goalName').value || "Your Goal";
-        const goalAmount = parseFloat(document.getElementById('goalAmount').value) || 0;
-        const months = parseInt(document.getElementById('months').value) || 1;
-
-        if (goalAmount <= 0 || months <= 0) {
-            alert("Please enter valid goal numbers.");
-            return;
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-
-        nextStep(4); // Move to the results step
-
-        const capacity = income - expenses;
-        const requiredMonthly = goalAmount / months;
-        const score = (capacity / requiredMonthly) * 100;
-        
-        const resultsDiv = document.getElementById('resultsContent');
-        let htmlOutput = "";
-
-        if (capacity <= 0) {
-            htmlOutput = `
-                <div class="result-box warning">
-                    <h3>Analysis</h3>
-                    <p>Your expenses match or exceed your income. You have $0 available capacity.</p>
-                    <p><strong>Next Step:</strong> Reduce fixed expenses before tackling this goal.</p>
-                </div>`;
-        } else if (score >= 100) {
-            const leftover = capacity - requiredMonthly;
-            htmlOutput = `
-                <div class="result-box">
-                    <h3>${goalName} is 100% Achievable</h3>
-                    <p>You have enough income to hit this in ${months} months.</p>
-                    <hr style="border-color: rgba(255,255,255,0.2);">
-                    <h4>Your Monthly Tasks:</h4>
-                    <ul>
-                        <li>Pay <strong>$${expenses.toFixed(2)}</strong> for fixed expenses.</li>
-                        <li>Save <strong>$${requiredMonthly.toFixed(2)}</strong> for ${goalName}.</li>
-                        <li>Invest the remaining <strong>$${leftover.toFixed(2)}</strong>.</li>
-                    </ul>
-                </div>`;
-    
