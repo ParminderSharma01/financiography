@@ -206,3 +206,97 @@
     </div>
 
 </div>
+
+
+        <script>
+    // Navigation Logic
+    function nextStep(current) {
+        // Basic validation so they don't skip empty fields
+        const inputs = document.querySelectorAll('.step')[current].querySelectorAll('input');
+        if (inputs[0] && inputs[0].value === "") {
+            alert("Please enter a value before continuing.");
+            return;
+        }
+
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('step' + (current + 1)).classList.add('active');
+    }
+
+    function prevStep(current) {
+        document.getElementById('step' + current).classList.remove('active');
+        document.getElementById('step' + (current - 1)).classList.add('active');
+    }
+
+    function resetForm() {
+        document.getElementById('step5').classList.remove('active');
+        document.getElementById('step0').classList.add('active');
+        
+        // Clear all inputs
+        document.querySelectorAll('input').forEach(input => input.value = '');
+    }
+
+    // Financial Math Logic
+    function calculatePlan() {
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        const goalName = document.getElementById('goalName').value || "Your Goal";
+        const goalAmount = parseFloat(document.getElementById('goalAmount').value) || 0;
+        const months = parseInt(document.getElementById('months').value) || 1;
+
+        if (goalAmount <= 0 || months <= 0) {
+            alert("Please enter valid goal numbers.");
+            return;
+        }
+
+        nextStep(4); // Move to the results step
+
+        const capacity = income - expenses;
+        const requiredMonthly = goalAmount / months;
+        const score = (capacity / requiredMonthly) * 100;
+        
+        const resultsDiv = document.getElementById('resultsContent');
+        let htmlOutput = "";
+
+        if (capacity <= 0) {
+            htmlOutput = `
+                <div class="result-box warning">
+                    <h3>Analysis</h3>
+                    <p>Your expenses match or exceed your income. You have $0 available capacity.</p>
+                    <p><strong>Next Step:</strong> Reduce fixed expenses before tackling this goal.</p>
+                </div>`;
+        } else if (score >= 100) {
+            const leftover = capacity - requiredMonthly;
+            htmlOutput = `
+                <div class="result-box">
+                    <h3>${goalName} is 100% Achievable</h3>
+                    <p>You have enough income to hit this in ${months} months.</p>
+                    <hr style="border-color: rgba(255,255,255,0.2);">
+                    <h4>Your Monthly Tasks:</h4>
+                    <ul>
+                        <li>Pay <strong>$${expenses.toFixed(2)}</strong> for fixed expenses.</li>
+                        <li>Save <strong>$${requiredMonthly.toFixed(2)}</strong> for ${goalName}.</li>
+                        <li>Invest the remaining <strong>$${leftover.toFixed(2)}</strong>.</li>
+                    </ul>
+                </div>`;
+        } else {
+            const adjustedMonths = Math.ceil(goalAmount / capacity);
+            htmlOutput = `
+                <div class="result-box warning">
+                    <h3>${goalName} is ${score.toFixed(1)}% Achievable</h3>
+                    <p>You need $${requiredMonthly.toFixed(2)}/mo, but only have $${capacity.toFixed(2)}.</p>
+                    <hr style="border-color: rgba(255,255,255,0.2);">
+                    <h4>Your Adjusted Reality:</h4>
+                    <ul>
+                        <li>Pay <strong>$${expenses.toFixed(2)}</strong> for fixed expenses.</li>
+                        <li>Save your maximum of <strong>$${capacity.toFixed(2)}</strong> for ${goalName}.</li>
+                        <li><strong>New Timeline:</strong> It will take you <strong>${adjustedMonths} months</strong> to reach this goal.</li>
+                    </ul>
+                </div>`;
+        }
+
+        resultsDiv.innerHTML = htmlOutput;
+    }
+</script>
+
+</body>
+</html>
