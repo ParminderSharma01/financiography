@@ -3,109 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goal-Based Financial Planner</title>
+    <title>Premium Financial Planner</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f9; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
-        h2 { margin-top: 0; color: #333; }
-        label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; color: #555; }
-        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { margin-top: 25px; width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #0056b3; }
-        #results { margin-top: 25px; padding-top: 20px; border-top: 2px solid #eee; display: none; }
-        .task-list { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff; margin-top: 15px; }
-        .warning { border-left-color: #ffc107; }
-        .success { border-left-color: #28a745; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>Financial Goal Planner</h2>
-    
-    <label for="income">Monthly Income ($)</label>
-    <input type="number" id="income" placeholder="e.g. 5000">
-
-    <label for="expenses">Monthly Fixed Expenses ($)</label>
-    <input type="number" id="expenses" placeholder="e.g. 3000">
-
-    <label for="goalName">What is your goal?</label>
-    <input type="text" id="goalName" placeholder="e.g. House Down Payment">
-
-    <label for="goalAmount">Total Amount Needed ($)</label>
-    <input type="number" id="goalAmount" placeholder="e.g. 20000">
-
-    <label for="months">Timeline (Months)</label>
-    <input type="number" id="months" placeholder="e.g. 24">
-
-    <button onclick="calculatePlan()">Generate Plan</button>
-
-    <div id="results"></div>
-</div>
-
-<script>
-    function calculatePlan() {
-        const income = parseFloat(document.getElementById('income').value);
-        const expenses = parseFloat(document.getElementById('expenses').value);
-        const goalName = document.getElementById('goalName').value || "Your Goal";
-        const goalAmount = parseFloat(document.getElementById('goalAmount').value);
-        const months = parseInt(document.getElementById('months').value);
-        const resultsDiv = document.getElementById('results');
-
-        if (!income || !expenses || !goalAmount || !months) {
-            alert("Please fill out all the number fields.");
-            return;
+        /* Rich Animated Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f005c, #5b0060, #870160, #ac255e, #ca485c, #e16b5c, #f39060, #ffb56b);
+            background-size: 300% 300%;
+            animation: gradientMove 12s ease infinite;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        const capacity = income - expenses;
-        const requiredMonthly = goalAmount / months;
-        const score = (capacity / requiredMonthly) * 100;
-        
-        let htmlOutput = "";
-
-        if (capacity <= 0) {
-            htmlOutput = `
-                <div class="task-list warning">
-                    <h3>Analysis</h3>
-                    <p>Your expenses are equal to or higher than your income. You have $0 available to save.</p>
-                    <p><strong>Next Step:</strong> Focus on reducing fixed expenses or increasing income before starting this goal.</p>
-                </div>`;
-        } else if (score >= 100) {
-            const leftover = capacity - requiredMonthly;
-            htmlOutput = `
-                <div class="task-list success">
-                    <h3>Plan for ${goalName}</h3>
-                    <p><strong>Achievability:</strong> 100%</p>
-                    <p>You have enough capacity to hit this goal in ${months} months!</p>
-                    <hr>
-                    <h4>Monthly Task List:</h4>
-                    <ul>
-                        <li><strong>Step 1:</strong> Pay $${expenses.toFixed(2)} for fixed expenses.</li>
-                        <li><strong>Step 2:</strong> Save $${requiredMonthly.toFixed(2)} for ${goalName}.</li>
-                        <li><strong>Step 3:</strong> Invest or save the remaining $${leftover.toFixed(2)} as an emergency buffer.</li>
-                    </ul>
-                </div>`;
-        } else {
-            const adjustedMonths = Math.ceil(goalAmount / capacity);
-            htmlOutput = `
-                <div class="task-list warning">
-                    <h3>Plan for ${goalName}</h3>
-                    <p><strong>Achievability:</strong> ${score.toFixed(1)}%</p>
-                    <p>You need to save $${requiredMonthly.toFixed(2)}/month, but you only have $${capacity.toFixed(2)} available.</p>
-                    <hr>
-                    <h4>Adjusted Monthly Task List:</h4>
-                    <ul>
-                        <li><strong>Step 1:</strong> Pay $${expenses.toFixed(2)} for fixed expenses.</li>
-                        <li><strong>Step 2:</strong> Save your maximum capacity of $${capacity.toFixed(2)} for ${goalName}.</li>
-                        <li><strong>Reality Check:</strong> At this rate, it will take you <strong>${adjustedMonths} months</strong> instead of ${months}.</li>
-                    </ul>
-                </div>`;
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        resultsDiv.innerHTML = htmlOutput;
-        resultsDiv.style.display = "block";
-    }
-</script>
+        /* Frosted Glass Container */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-height: 350px;
+        }
 
-</body>
-</html>
+        /* Step Animations */
+        .step {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease forwards;
+        }
+        .step.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
