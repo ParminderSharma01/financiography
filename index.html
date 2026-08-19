@@ -278,25 +278,4 @@
                         <li>Invest the remaining <strong>$${leftover.toFixed(2)}</strong>.</li>
                     </ul>
                 </div>`;
-        } else {
-            const adjustedMonths = Math.ceil(goalAmount / capacity);
-            htmlOutput = `
-                <div class="result-box warning">
-                    <h3>${goalName} is ${score.toFixed(1)}% Achievable</h3>
-                    <p>You need $${requiredMonthly.toFixed(2)}/mo, but only have $${capacity.toFixed(2)}.</p>
-                    <hr style="border-color: rgba(255,255,255,0.2);">
-                    <h4>Your Adjusted Reality:</h4>
-                    <ul>
-                        <li>Pay <strong>$${expenses.toFixed(2)}</strong> for fixed expenses.</li>
-                        <li>Save your maximum of <strong>$${capacity.toFixed(2)}</strong> for ${goalName}.</li>
-                        <li><strong>New Timeline:</strong> It will take you <strong>${adjustedMonths} months</strong> to reach this goal.</li>
-                    </ul>
-                </div>`;
-        }
-
-        resultsDiv.innerHTML = htmlOutput;
-    }
-</script>
-
-</body>
-</html>
+    
