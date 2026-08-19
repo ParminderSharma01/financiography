@@ -22,7 +22,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Frosted Glass Container with Custom Scroll */
+        /* Frosted Glass Container */
         .glass-panel {
             background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2);
@@ -48,7 +48,7 @@
         /* Typography & Inputs */
         h2 { font-size: 28px; margin-bottom: 30px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         h3 { margin-top: 0; color: #fff; }
-        h4 { color: #ffe4a0; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
+        h4 { color: #ffe4a0; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; margin-top: 25px;}
         
         input {
             width: 100%; padding: 15px; background: rgba(255, 255, 255, 0.15);
@@ -183,11 +183,20 @@
     }
 
     function calculatePlan() {
-        const income = parseFloat(document.getElementById('income').value) || 0;
-        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        // Retrieve values and parse them
+        let incomeValue = document.getElementById('income').value;
+        let expensesValue = document.getElementById('expenses').value;
+        let goalAmountValue = document.getElementById('goalAmount').value;
+        let monthsValue = document.getElementById('months').value;
+
+        // Use the currency symbol based on the user's input, default to $
+        const currency = "₹"; // Changed default to generic or leave as numeric
+
+        const income = parseFloat(incomeValue) || 0;
+        const expenses = parseFloat(expensesValue) || 0;
         const goalName = document.getElementById('goalName').value || "Your Goal";
-        const goalAmount = parseFloat(document.getElementById('goalAmount').value) || 0;
-        const months = parseInt(document.getElementById('months').value) || 1;
+        const goalAmount = parseFloat(goalAmountValue) || 0;
+        const months = parseInt(monthsValue) || 1;
 
         if (goalAmount <= 0 || months <= 0) {
             alert("Please enter valid goal numbers.");
@@ -236,22 +245,38 @@
                            <p>To reach this safely without debt, your timeline shifts to <strong>${finalMonths} months</strong>.</p>`;
         }
 
-        // --- NEW: Zero-Based Allocation ---
+        // --- Zero-Based Allocation ---
         htmlOutput += `<h4>The Monthly Blueprint (Every Penny Accounted For)</h4>
                        <ul>
-                           <li><strong>Needs:</strong> 💵 ${expenses.toFixed(2)} to cover your fixed living expenses.</li>
-                           <li><strong>The Goal:</strong> 🎯 ${finalMonthlySave.toFixed(2)} locked away for ${goalName}.</li>`;
+                           <li><strong>Needs:</strong> ${expenses.toFixed(2)} to cover your fixed living expenses.</li>
+                           <li><strong>The Goal:</strong> ${finalMonthlySave.toFixed(2)} locked away for ${goalName}.</li>`;
         
         if (surplus > 0) {
-            htmlOutput += `<li><strong>Future Wealth:</strong> 📈 ${generalInvesting.toFixed(2)} to invest (e.g., Mutual Funds, Index Funds) to grow your net worth.</li>
-                           <li><strong>Guilt-Free Fun:</strong> 🎉 ${personalSpending.toFixed(2)} to spend on yourself, hobbies, or whatever makes you happy!</li>`;
+            htmlOutput += `<li><strong>Future Wealth:</strong> ${generalInvesting.toFixed(2)} extra to invest and grow your net worth.</li>
+                           <li><strong>Guilt-Free Fun:</strong> ${personalSpending.toFixed(2)} to spend entirely on yourself!</li>`;
         } else {
-            htmlOutput += `<li><strong>Reality Check:</strong> ⚠️ You currently have 0.00 left for extra personal spending or general investing. Every spare penny is fighting for your goal!</li>`;
+            htmlOutput += `<li><strong>Reality Check:</strong> You currently have 0.00 left for extra personal spending. Every spare penny is fighting for your goal!</li>`;
         }
         htmlOutput += `</ul>
                        <div class="zero-based-summary">
                            Total Allocated: ${(expenses + finalMonthlySave + personalSpending + generalInvesting).toFixed(2)} / Total Income: ${income.toFixed(2)}
                        </div>`;
+
+        // --- Smart Investment Recommendations WITH AMOUNTS ---
+        htmlOutput += `<h4>Execution Strategy (Where to put the money)</h4><ul>`;
+        
+        if (finalMonths < 36) {
+            htmlOutput += `<li><strong>For ${goalName}:</strong> Because your timeline is short (under 3 years), protect your capital. Open a <strong>Fixed Deposit (FD)</strong> or Recurring Deposit (RD) and deposit exactly <strong>${finalMonthlySave.toFixed(2)}</strong> into it every month.</li>`;
+        } else {
+            htmlOutput += `<li><strong>For ${goalName}:</strong> Because your timeline is long (3+ years), beat inflation. Start a Systematic Investment Plan (SIP) in a Conservative <strong>Mutual Fund</strong> for exactly <strong>${finalMonthlySave.toFixed(2)}</strong> every month.</li>`;
+        }
+
+        if (surplus > 0) {
+            htmlOutput += `<li><strong>For Future Wealth:</strong> Take the extra <strong>${generalInvesting.toFixed(2)}</strong> we allocated for wealth building and automate a monthly SIP into an Equity Mutual Fund or Index Fund to grow your long-term money.</li>`;
+        }
+        
+        htmlOutput += `<li><strong>Action Required:</strong> Always search the internet for today's live interest rates and historical mutual fund returns before deciding where to park your money!</li>`;
+        htmlOutput += `</ul>`;
 
         // --- Yearly Milestones ---
         const totalYears = Math.floor(finalMonths / 12);
@@ -269,18 +294,7 @@
             htmlOutput += `</ul>`;
         }
 
-        // --- Smart Investment Recommendations ---
-        htmlOutput += `<h4>Growth & Investment Strategy</h4><ul>`;
-        
-        if (finalMonths < 36) {
-            htmlOutput += `<li><strong>Vehicle:</strong> Because your goal is short-term (under 3 years), protect your capital. Look into opening a <strong>Fixed Deposit (FD)</strong> or Recurring Deposit (RD).</li>`;
-        } else {
-            htmlOutput += `<li><strong>Vehicle:</strong> Because your goal is long-term (3+ years), you need to beat inflation. Consider starting a Systematic Investment Plan (SIP) in <strong>Mutual Funds</strong> or Index Funds.</li>`;
-        }
-        
-        htmlOutput += `<li><strong>Action Required:</strong> Always check the internet for today's live interest rates and historical mutual fund returns before deciding where to park your money. Don't let your money sit idle!</li>`;
-        htmlOutput += `</ul></div>`;
-
+        htmlOutput += `</div>`;
         document.getElementById('resultsContent').innerHTML = htmlOutput;
     }
 </script>
