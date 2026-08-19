@@ -1,4 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Financial Planner</title>
+    <style>
+        /* Rich Animated Background */
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f005c, #5b0060, #870160, #ac255e, #ca485c, #e16b5c, #f39060, #ffb56b);
+            background-size: 300% 300%;
+            animation: gradientMove 12s ease infinite;
+            color: #fff; display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+        }
 
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Frosted Glass Container with Custom Scroll */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px; padding: 40px; width: 90%; max-width: 550px;
+            max-height: 85vh; overflow-y: auto; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Custom Scrollbar */
+        .glass-panel::-webkit-scrollbar { width: 8px; }
+        .glass-panel::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        .glass-panel::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+
+        /* Step Animations */
+        .step { display: none; text-align: center; animation: slideIn 0.5s ease forwards; }
+        .step.active { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Typography & Inputs */
+        h2 { font-size: 28px; margin-bottom: 30px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        h3 { margin-top: 0; color: #fff; }
+        h4 { color: #ffe4a0; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
+        
+        input {
+            width: 100%; padding: 15px; background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px;
+            color: #fff; font-size: 20px; text-align: center; box-sizing: border-box;
+            outline: none; transition: 0.3s;
+        }
+        input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        input:focus { border-color: #fff; background: rgba(255, 255, 255, 0.25); }
+
+        /* Premium Buttons */
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        button {
+            flex: 1; padding: 15px; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn-next { background: #fff; color: #5b0060; }
+        .btn-next:hover { background: #f0f0f0; transform: translateY(-2px); }
+        .btn-back { background: rgba(255, 255, 255, 0.2); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Results Styling */
+        #resultsContent { text-align: left; }
+        .result-box {
+            background: rgba(0, 0, 0, 0.2); padding: 25px; border-radius: 12px;
+            margin-top: 15px; border-left: 5px solid #4ade80; font-size: 15px;
+        }
+        .result-box.warning { border-left-color: #fbbf24; }
+        .result-box ul { padding-left: 20px; line-height: 1.8; margin-top: 0; }
+        
+        .quote-box {
+            background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;
+            font-style: italic; text-align: center; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .zero-based-summary {
+            background: rgba(255, 255, 255, 0.15); padding: 12px; border-radius: 8px;
+            text-align: center; font-weight: bold; margin-bottom: 20px; margin-top: 15px;
+            border: 1px dashed rgba(255,255,255,0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-panel">
+    
+    <!-- Steps 1 to 5 -->
+    <div class="step active" id="step0">
+        <h2>What is your monthly income?</h2>
+        <input type="number" id="income" placeholder="0.00">
+        <div class="btn-group"><button class="btn-next" onclick="nextStep(0)">Next</button></div>
+    </div>
 
     <div class="step" id="step1">
         <h2>What are your fixed monthly expenses?</h2>
@@ -36,7 +140,7 @@
         </div>
     </div>
 
-    <!-- Step 6: Upgraded Results -->
+    <!-- Step 6: Results -->
     <div class="step" id="step5">
         <h2>Your Master Plan</h2>
         <div id="resultsContent"></div>
@@ -48,7 +152,6 @@
 </div>
 
 <script>
-    // Array of unique, beautiful messages
     const beautifulMessages = [
         "Every sum saved is a seed planted for your future forest.",
         "Patience and discipline are the true architects of financial freedom.",
@@ -91,7 +194,7 @@
             return;
         }
 
-        nextStep(4); // Move to results
+        nextStep(4);
 
         const capacity = income - expenses;
         const requiredMonthly = goalAmount / months;
@@ -100,10 +203,14 @@
         
         const finalMonths = isAchievable ? months : Math.ceil(goalAmount / capacity);
         const finalMonthlySave = isAchievable ? requiredMonthly : capacity;
+        const surplus = isAchievable ? (capacity - requiredMonthly) : 0;
+
+        // Zero-Based Budgeting Splitting
+        const personalSpending = surplus * 0.30; // 30% of leftover for fun
+        const generalInvesting = surplus * 0.70; // 70% of leftover for wealth
 
         let htmlOutput = "";
 
-        // Pick a random beautiful message
         const randomMsg = beautifulMessages[Math.floor(Math.random() * beautifulMessages.length)];
         htmlOutput += `<div class="quote-box">"${randomMsg}"</div>`;
 
@@ -118,7 +225,6 @@
             return;
         }
 
-        // Build the main result box
         let boxClass = isAchievable ? "result-box" : "result-box warning";
         htmlOutput += `<div class="${boxClass}">`;
         
@@ -130,18 +236,24 @@
                            <p>To reach this safely without debt, your timeline shifts to <strong>${finalMonths} months</strong>.</p>`;
         }
 
-        // Monthly Task List
-        htmlOutput += `<h4>The Monthly Ritual</h4>
+        // --- NEW: Zero-Based Allocation ---
+        htmlOutput += `<h4>The Monthly Blueprint (Every Penny Accounted For)</h4>
                        <ul>
-                           <li><strong>Step 1:</strong> Clear ${expenses.toFixed(2)} in fixed living expenses.</li>
-                           <li><strong>Step 2:</strong> Immediately secure ${finalMonthlySave.toFixed(2)} toward ${goalName}.</li>`;
+                           <li><strong>Needs:</strong> 💵 ${expenses.toFixed(2)} to cover your fixed living expenses.</li>
+                           <li><strong>The Goal:</strong> 🎯 ${finalMonthlySave.toFixed(2)} locked away for ${goalName}.</li>`;
         
-        if (isAchievable && (capacity - requiredMonthly) > 0) {
-            htmlOutput += `<li><strong>Step 3:</strong> You have ${(capacity - requiredMonthly).toFixed(2)} left over. Build an emergency buffer!</li>`;
+        if (surplus > 0) {
+            htmlOutput += `<li><strong>Future Wealth:</strong> 📈 ${generalInvesting.toFixed(2)} to invest (e.g., Mutual Funds, Index Funds) to grow your net worth.</li>
+                           <li><strong>Guilt-Free Fun:</strong> 🎉 ${personalSpending.toFixed(2)} to spend on yourself, hobbies, or whatever makes you happy!</li>`;
+        } else {
+            htmlOutput += `<li><strong>Reality Check:</strong> ⚠️ You currently have 0.00 left for extra personal spending or general investing. Every spare penny is fighting for your goal!</li>`;
         }
-        htmlOutput += `</ul>`;
+        htmlOutput += `</ul>
+                       <div class="zero-based-summary">
+                           Total Allocated: ${(expenses + finalMonthlySave + personalSpending + generalInvesting).toFixed(2)} / Total Income: ${income.toFixed(2)}
+                       </div>`;
 
-        // Yearly Milestones Generation
+        // --- Yearly Milestones ---
         const totalYears = Math.floor(finalMonths / 12);
         const remainingMonths = finalMonths % 12;
         
@@ -157,18 +269,16 @@
             htmlOutput += `</ul>`;
         }
 
-        // Smart Investment Recommendations
+        // --- Smart Investment Recommendations ---
         htmlOutput += `<h4>Growth & Investment Strategy</h4><ul>`;
         
         if (finalMonths < 36) {
-            // Short term recommendation
             htmlOutput += `<li><strong>Vehicle:</strong> Because your goal is short-term (under 3 years), protect your capital. Look into opening a <strong>Fixed Deposit (FD)</strong> or Recurring Deposit (RD).</li>`;
         } else {
-            // Long term recommendation
             htmlOutput += `<li><strong>Vehicle:</strong> Because your goal is long-term (3+ years), you need to beat inflation. Consider starting a Systematic Investment Plan (SIP) in <strong>Mutual Funds</strong> or Index Funds.</li>`;
         }
         
-        htmlOutput += `<li><strong>Action Required:</strong> Always search the internet for today's live interest rates and historical mutual fund returns before deciding where to park your money. Don't let your money sit in a 0% checking account!</li>`;
+        htmlOutput += `<li><strong>Action Required:</strong> Always check the internet for today's live interest rates and historical mutual fund returns before deciding where to park your money. Don't let your money sit idle!</li>`;
         htmlOutput += `</ul></div>`;
 
         document.getElementById('resultsContent').innerHTML = htmlOutput;
